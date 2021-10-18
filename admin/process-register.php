@@ -15,6 +15,10 @@
     $email     = $_POST['email'];
     $pass1     = $_POST['pass1'];
     $pass2     = $_POST['pass2'];
+    //tạo 1 string ngẫu nhiên để active
+    $strRandom=rand(1000,9999);
+    $strAct=md5($strRandom);
+    echo $strAct;
     //quy trình 3(4) bước:
     //bước 1 kết nối sql
     $conn=mysqli_connect('localhost','root','','dhtl');
@@ -32,7 +36,7 @@
     }else{
         //2.2 không trùng email mới lưu
         $pass_hash= password_hash($pass1,PASSWORD_DEFAULT);
-        $sql_2="INSERT into db_nguoidung (tendangnhap,email,matkhau) VALUES ('$username','$email','$pass_hash')";
+        $sql_2="INSERT into db_nguoidung (tendangnhap,email,matkhau,activation) VALUES ('$username','$email','$pass_hash','$strAct')";
         $result_2=mysqli_query($conn,$sql_2);
 
         if($result_2>0){
@@ -62,17 +66,13 @@
             
                 // Content
                 $mail->isHTML(true);   // Set email format to HTML
-                $tieude = '[Đăng kí tk] Kích hoạt tài khoản';
+                $tieude = '[Đăng kí thành công] Xác minh tài khoản';
                 $mail->Subject = $tieude;
                 
                 // Mail body content 
-                $bodyContent = '<p>Thân gửi Tân sinh viên </h1>'.$username; 
-                $bodyContent .= '<p>Trường Đại học Thủy lợi xin chúc mừng Em đã trở thành Tân sinh viên ngành <b>Hệ thống thông tin</b> của Khoa Công nghệ thông tin. </p>'; 
-                $bodyContent .= '<p>Trong các ngày 08,09/9/2021 Nhà trường đã gửi Giấy báo nhập học tới địa chỉ của Em khi đăng ký xét tuyển trực tuyến. Hiện tại, dịch COVID-19 đang diễn biến phức tạp nên Nhà trường gửi bổ sung Giấy báo nhập học (bản pdf đính kèm) để hoàn tất các thủ tục tại địa phương (nếu cần).</p>'; 
-                $bodyContent .= '<p>Mọi thắc mắc xin liên hệ Phòng Đào tạo – Trường Đại học Thủy lợi, Số điện thoại <b>0243.563.1537</b>, Email: <b>tuyensinh@tlu.edu.vn </b></p>'; 
-                $bodyContent .= '<p>Một lần nữa, Trường Đại học Thủy lợi xin gửi tới Em và gia đình lời chúc mừng, chúc sức khỏe bình an, hạnh phúc.</p>'; 
-                $bodyContent .= '<p>Chú ý: Văn phòng Khoa Công nghệ thông tin sẽ liên hệ trực tiếp bằng điện thoại đến từng em để hướng dẫn đăng ký chương trình Việt-Nhật, Việt-Anh hoặc Aptech.</p>';
-                $bodyContent .= '<p><b>Thân mến!</b></p>';
+                $bodyContent = '<p> Để kích hoạt tài khoản </h1>';
+                $bodyContent .= "<a href='http://localhost:82/dhtl/admin/activation.php?email=$email&activation=$strAct'>Click here</a>" ;
+        
                 
                 $mail->Body = $bodyContent;
                 // $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
